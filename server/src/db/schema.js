@@ -13,14 +13,14 @@ const addressSchema = Joi.object({
 
 const schema = Joi.object({
     firstname: Joi.string()
-        .min(2)
+        .min(1)
         .max(30)
         .required(),
     middlename: Joi.string()
-        .min(2)
+        .min(1)
         .max(30),
     lastname: Joi.string()
-        .min(2)
+        .min(1)
         .max(30)
         .required(),
     email: Joi.string()
