@@ -1,6 +1,6 @@
 import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../theme";
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import UserTable from '../components/UserTable';
 
 import { useUserData } from '../data/UserDataContext';
@@ -17,35 +17,38 @@ import StatBox from "../components/StatBox";
 const statusEnum = ['Inquiry', 'Waiting for Patient', 'Action Needed', 'Onboarding', 'Active', 'Churned'];
 
 const Dashboard = () => {
-  console.log("dashboard 1");
-
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  console.log("dashboard 2");
+  const [loading, setLoading] = useState(false);
+  const { userData, updateUserData } = useUserData();
 
-  const {userData, updateUserData } = useUserData();
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
+      setLoading(true);
       let response = await fetch('/api/patients');
+  
       if (!response.ok) {
-        throw new Error('Unable to fetch response');
+        throw new Error("Unable to fetch response");
       }
+  
       const data = await response.json();
       updateUserData(data);
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
     }
-  };
-
-
+  }, [updateUserData]);
+  
+  // const {userData, updateUserData } = useUserData();
+  
   console.log("dashboard 4");
 
   const statusCounts = statusEnum.reduce((counts, status) => {
-    counts[status] = userData.filter((user) => user.newUserData.status === status).length;
+    counts[status] = userData.filter((user) => user.status === status).length;
     return counts;
   }, {});
-
+  
   return (
     <Box m="20px">
       {/* HEADER */}
@@ -54,9 +57,12 @@ const Dashboard = () => {
         <h2>You have {userData.length} clients </h2>
       </Box>
 
-      {/* Button to fetch data */}
-      <Button onClick={fetchData} variant="contained" color="primary">
-        Refresh client list
+      <Button
+        onClick={fetchData}
+        variant="contained"
+        color="primary"
+        disabled={loading} >
+        {loading ? 'Refreshing...' : 'Refresh client list'}
       </Button>
 
       {/* Display StatBoxes for each status */}
@@ -93,7 +99,7 @@ const Dashboard = () => {
           </Box>
         ))}
       </Box>
-      {/* <UserTable userData={userData}/> */}
+      <UserTable userTableData/>
       </Box>
   );
 };

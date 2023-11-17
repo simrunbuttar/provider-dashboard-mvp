@@ -1,19 +1,34 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, MenuItem, Select } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 
 const Form = () => {
+  const statusEnum = ['Inquiry', 'Waiting for Patient', 'Action Needed', 'Onboarding', 'Active', 'Churned'];
+
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
   const handleFormSubmit = (values) => {
+    const formattedValues = {
+      ...values,
+      addresses: [
+        {
+          street: values.street,
+          city: values.city,
+          state: values.state,
+          postalCode: values.postalCode,
+        },
+      ],
+    };
+
     console.log(values);
+    console.log(formattedValues);
   };
 
   return (
     <Box m="20px">
-      <Header title="CREATE USER" subtitle="Create a New User Profile" />
+      <Header title="ADD NEW PATIENT" subtitle="Add a New Patient Profile" />
 
       <Formik
         onSubmit={handleFormSubmit}
@@ -48,7 +63,20 @@ const Form = () => {
                 name="firstName"
                 error={!!touched.firstName && !!errors.firstName}
                 helperText={touched.firstName && errors.firstName}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 1" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Middle Name"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.middleName}
+                name="middleName"
+                error={!!touched.middleName && !!errors.middleName}
+                helperText={touched.middleName && errors.middleName}
+                sx={{ gridColumn: "span 1" }}
               />
               <TextField
                 fullWidth
@@ -61,7 +89,7 @@ const Form = () => {
                 name="lastName"
                 error={!!touched.lastName && !!errors.lastName}
                 helperText={touched.lastName && errors.lastName}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 1" }}
               />
               <TextField
                 fullWidth
@@ -74,51 +102,150 @@ const Form = () => {
                 name="email"
                 error={!!touched.email && !!errors.email}
                 helperText={touched.email && errors.email}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ gridColumn: "span 2" }}
               />
-              <TextField
+              <Select
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Contact Number"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.contact}
-                name="contact"
-                error={!!touched.contact && !!errors.contact}
-                helperText={touched.contact && errors.contact}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Address 1"
+                label="Status"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.address1}
                 name="address1"
                 error={!!touched.address1 && !!errors.address1}
                 helperText={touched.address1 && errors.address1}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ gridColumn: "span 2" }} >
+                {statusEnum.map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+                </Select>
+              {/* Dropdowns for Date of Birth */}
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Date of Birth"
+                disabled
+                value={`${values.year}-${values.month}-${values.day}`}
+                name="dateOfBirth"
+                error={!!touched.dateOfBirth && !!errors.dateOfBirth}
+                helperText={touched.dateOfBirth && errors.dateOfBirth}
+                sx={{ gridColumn: "span 1" }}
+              />
+              <Select
+                value={values.year}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                name="year"
+                label="Year"
+                variant="filled"
+                fullWidth
+                sx={{ gridColumn: "span 1" }}
+              >
+                {/* Generate a list of years */}
+                {Array.from({ length: 118 }, (_, index) => {
+                  const year = new Date().getFullYear() - index;
+                  return (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+              <Select
+                value={values.month}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                name="month"
+                label="Month"
+                variant="filled"
+                fullWidth
+                sx={{ gridColumn: "span 1" }}
+              >
+               {/* Generate a list of months */}
+               {Array.from({ length: 12 }, (_, index) => (
+                  <MenuItem key={index + 1} value={index + 1}>
+                    {index + 1}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Select
+                value={values.day}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                name="day"
+                label="Day"
+                variant="filled"
+                fullWidth
+                sx={{ gridColumn: "span 1" }}
+              >
+                {/* Generate a list of days */}
+                {Array.from({ length: 31 }, (_, index) => (
+                  <MenuItem key={index + 1} value={index + 1}>
+                    {index + 1}
+                  </MenuItem>
+                ))}
+              </Select>
+              {/* Addressses Array */}
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Street"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.street}
+                name="street"
+                error={!!touched.street && !!errors.street}
+                helperText={touched.street && errors.street}
+                sx={{ gridColumn: "span 1" }}
               />
               <TextField
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Address 2"
+                label="City"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.address2}
-                name="address2"
-                error={!!touched.address2 && !!errors.address2}
-                helperText={touched.address2 && errors.address2}
-                sx={{ gridColumn: "span 4" }}
+                value={values.city}
+                name="city"
+                error={!!touched.city && !!errors.city}
+                helperText={touched.city && errors.city}
+                sx={{ gridColumn: "span 1" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="State"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.state}
+                name="state"
+                error={!!touched.state && !!errors.state}
+                helperText={touched.state && errors.state}
+                sx={{ gridColumn: "span 1" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Postal Code"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.postalCode}
+                name="postalCode"
+                error={!!touched.postalCode && !!errors.postalCode}
+                helperText={touched.postalCode && errors.postalCode}
+                sx={{ gridColumn: "span 1" }}
               />
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                Create New User
+                Create New Patient
               </Button>
             </Box>
           </form>
@@ -128,27 +255,34 @@ const Form = () => {
   );
 };
 
-const phoneRegExp =
-  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-
 const checkoutSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  contact: yup
-    .string()
-    .matches(phoneRegExp, "Phone number is not valid")
-    .required("required"),
-  address1: yup.string().required("required"),
-  address2: yup.string().required("required"),
+  firstName: yup.string().required("First name is required"),
+  middleName: yup.string(), 
+  lastName: yup.string().required("Last name is required"),
+  email: yup.string().email("invalid email").required("Email is required"),
+  year: yup.number().min(1906, 'Year cannot be before 1906').max(new Date().getFullYear(), "Year cannot be in the future").required('Year is required'),
+  month: yup.number().required('Month is required'),
+  day: yup.number().required('Day is required'),
+  dateOfBirth: yup.date().nullable().required("Date of Birth is required"),
+  street: yup.string().required("Street is required"), 
+  city: yup.string().required("City is required"), 
+  state: yup.string().required('State is required'),
+  postalCode: yup.string().required('Postal Code is required')
 });
+
 const initialValues = {
   firstName: "",
+  middleName: "", 
   lastName: "",
   email: "",
-  contact: "",
-  address1: "",
-  address2: "",
+  year: "",
+  month: "",
+  day: "",
+  dateOfBirth: "",
+  street: "", 
+  city: "", 
+  state: "", 
+  postalCode: ""
 };
 
 export default Form;

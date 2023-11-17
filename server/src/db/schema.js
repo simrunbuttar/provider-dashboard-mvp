@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 
-// NOTE: This is unfortunately also being maintatined in constants.js (react-client/src/constants/constants.jsx)
+// NOTE: This is unfortunately also being maintatined in constants.js (react-client/src/constants/constants.jsx
 // If changed, please change there as well
 const statusEnum = ['Inquiry', 'Waiting for Patient', 'Action Needed', 'Onboarding', 'Active', 'Churned'];
 

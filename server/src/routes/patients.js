@@ -58,12 +58,8 @@ router.post('/', async (req, res, next) => {
       return next(error);
     }
 
-    console.log("?");
-    const newUserData = req.body;
-
-    const newuser = await patients.insert({
-        newUserData
-    });
+    // Use spread operator to include all properties dynamically
+    const newuser = await patients.insert(req.body);
 
     res.status(201).json(newuser);
   } catch (error) {
