@@ -39,6 +39,8 @@ router.get('/:id', async (req, res, next) => {
 /* Create a new patient */
 router.post('/', async (req, res, next) => {
   try {
+    console.log("request");
+    console.log(req.body);
     await schema.validateAsync(req.body);
   } catch (error) {
     console.error("Validation error: ", error.message);
@@ -57,8 +59,6 @@ router.post('/', async (req, res, next) => {
       res.status(409); // conflict error
       return next(error);
     }
-
-    // Use spread operator to include all properties dynamically
     const newuser = await patients.insert(req.body);
 
     res.status(201).json(newuser);
@@ -69,10 +69,19 @@ router.post('/', async (req, res, next) => {
 
 /* Update a specific patient */
 router.put('/:id', async (req, res, next) => {
+  const { id } = req.params;
+  const data = req.body;
+  console.log("data");
+  console.log(data);
+  let result;
   try {
-    const { id } = req.params;
-    const data = req.body;
-    const result = await schema.validateAsync(data);
+    result = await schema.validateAsync(data);
+  } catch (error) {
+    console.error("Validation error: ", error.message);
+    return res.status(400).json({error: error.message});
+   }
+    
+  try {
     const patient = await patients.findOne({
       _id: id,
     });

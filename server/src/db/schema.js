@@ -8,8 +8,16 @@ const addressSchema = Joi.object({
     street: Joi.string().required(),
     city: Joi.string().required(),
     state: Joi.string().required(),
-    postalCode: Joi.string().required(),
+    postalCode: Joi.string().required(), 
+    type: Joi.string()
+        .valid('Primary', 'Secondary') 
+        .required(),
   });
+
+const fieldSchema = Joi.object({
+label: Joi.string().required(),
+value: Joi.any().required(), 
+});
 
 const schema = Joi.object({
     firstname: Joi.string()
@@ -34,8 +42,17 @@ const schema = Joi.object({
         .required(),
     addresses: Joi.array()
         .items(addressSchema)
-        .required()
-})
+        .custom((addresses, helpers) => {
+            const primaryCount = addresses.filter(address => address.type === 'Primary').length;
+            if (primaryCount > 1) {
+                return helpers.error('any.invalid');
+            }
+            return addresses;
+        })
+        .required(), 
+    fields: Joi.array()
+        .items(fieldSchema)
+});
 
 // Function to dynamically update the schema based on user-defined fields
 function updateUserSchema(customFields) {

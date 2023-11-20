@@ -1,0 +1,53 @@
+/* DatatablePage.css */
+
+.datatable-container {
+    margin: 20px;
+  }
+  
+  .table {
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  .table thead th {
+    font-weight: bold;
+    position: relative;
+  }
+
+  .table thead th::before {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    font-family: 'Font Awesome 5 Free';
+    color: #007bff; 
+  }
+
+    
+  .table thead th.sort-asc::before {
+    content: '\f0de'; /* Unicode for Font Awesome sort-down icon */
+  }
+
+
+  .table tbody td {
+    padding: 12px;
+  }
+  
+  .table tbody tr:nth-child(even) {
+    background-color: #ED7630; /* Your even row background color */
+  }
+  
+  .table tbody tr:hover {
+    background-color: #dc834f9a; /* Your hover background color */
+  }
+  
+  .button-link {
+    text-decoration: none;
+    color: #007bff;
+  }
+  
+  .button-link:hover {
+    text-decoration: underline;
+    color: #0056b3;
+  }
+  

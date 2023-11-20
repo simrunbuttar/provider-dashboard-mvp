@@ -1,87 +1,100 @@
-import { Box, Button, TextField, MenuItem} from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Box, Button, TextField, MenuItem } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
-import Header from "../../components/Header";
-import React from 'react';
 
 const statusEnum = ['Inquiry', 'Waiting for Patient', 'Action Needed', 'Onboarding', 'Active', 'Churned'];
 
-const Form = () => {
+const EditPatientForm = ({ initialPatientData, onSubmit }) => {
+  const [initialValues, setInitialValues] = useState({
+    firstname: "",
+    middlename: "",
+    lastname: "",
+    email: "",
+    year: "",
+    month: "",
+    day: "",
+    status: "",
+    dateOfBirth: "",
+    street: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    fields: [],
+    addresses: []
+  });
 
+  useEffect(() => {
+    const secondaryAddresses = initialPatientData.addresses
+    ? initialPatientData.addresses.filter(address => address.type === "Secondary")
+    : [];
 
-  const handleFormSubmit = (values, {resetForm}) => {
-    const formattedValues = {
-      firstname: values.firstname,
-      middlename: values.middlename || " ",
-      lastname: values.lastname,
-      email: values.email,
-      dateOfBirth: new Date(values.year, values.month - 1, values.day).toISOString().split('T')[0],
-      status: values.status,
-      addresses: [
-        {
-          street: values.street,
-          city: values.city,
-          state: values.state,
-          postalCode: values.postalCode,
-          type: "Primary",
-        },
-        ...values.addresses.map(address => ({
-          street: address.street,
-          city: address.city,
-          state: address.state,
-          postalCode: address.postalCode,
-          type: "Secondary",
-        })),
-      ],
-      fields: values.fields.map(field => ({ label: field.label, value: field.value })),
-    };
+    setInitialValues({
+      firstname: initialPatientData.firstname ?? "",
+      middlename: initialPatientData.middlename ?? "",
+      lastname: initialPatientData.lastname ?? "",
+      email: initialPatientData.email ?? "",
+      year: initialPatientData.dateOfBirth ? new Date(initialPatientData.dateOfBirth).getFullYear().toString() : "",
+      month: initialPatientData.dateOfBirth ? (new Date(initialPatientData.dateOfBirth).getMonth() + 1).toString() : "",
+      day: initialPatientData.dateOfBirth ? new Date(initialPatientData.dateOfBirth).getDate().toString() : "",
+      status: initialPatientData.status ?? "",
+      dateOfBirth: initialPatientData.dateOfBirth ?? "",
+      street: initialPatientData.addresses && initialPatientData.addresses.length > 0 ? initialPatientData.addresses[0].street ?? "" : "",
+      city: initialPatientData.addresses && initialPatientData.addresses.length > 0 ? initialPatientData.addresses[0].city ?? "" : "",
+      state: initialPatientData.addresses && initialPatientData.addresses.length > 0 ? initialPatientData.addresses[0].state ?? "" : "",
+      postalCode: initialPatientData.addresses && initialPatientData.addresses.length > 0 ? initialPatientData.addresses[0].postalCode ?? "" : "",
+      fields: initialPatientData.fields || [],
+      addresses: secondaryAddresses || []
+    });
+  }, [initialPatientData]);
 
-    console.log("values");
-
-    console.log(values);
-    console.log("formattedValues");
-
-    console.log(formattedValues);
-
-    fetch('/api/patients', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formattedValues),
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-        resetForm();
+  const checkoutSchema = yup.object().shape({
+    firstname: yup.string().required("First name is required"),
+    middlename: yup.string(),
+    lastname: yup.string().required("Last name is required"),
+    email: yup.string().email("Invalid email").required("Email is required"),
+    year: yup
+      .number()
+      .min(1906, 'Year cannot be before 1906')
+      .max(new Date().getFullYear(), "Year cannot be in the future")
+      .required('Year is required'),
+    month: yup.number().required('Month is required'),
+    day: yup.number().required('Day is required'),
+    dateOfBirth: yup.date().nullable(),
+    street: yup.string().required("Street is required"),
+    city: yup.string().required("City is required"),
+    state: yup.string().required('State is required'),
+    postalCode: yup.string().required('Postal Code is required'),
+    status: yup
+      .string()
+      .oneOf(statusEnum, 'Invalid status')
+      .required('Status is required'),
+    fields: yup.array().of(
+      yup.object().shape({
+        label: yup.string().required("Field label is required"),
+        value: yup.string().required("Field value is required"),
       })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  };
-
-
+    ),
+  });
 
   return (
-    <Box m="20px">
-      <Header title="ADD NEW PATIENT" subtitle="Add a New Patient Profile" />
-
-      <Formik
-        onSubmit={handleFormSubmit}
-        initialValues={initialValues}
-        validationSchema={checkoutSchema} 
-        enableReinitialize={true}
-      >
-        {({
-          values,
-          errors,
-          touched,
-          handleBlur,
-          handleChange,
-          handleSubmit,
-          setValues, 
-        }) => (
-          <form onSubmit={handleSubmit}>
+    <Formik
+      onSubmit={onSubmit}
+      initialValues={initialValues}
+      validationSchema={checkoutSchema}
+      enableReinitialize={true}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleBlur,
+        handleChange,
+        handleSubmit,
+        setValues
+      }) => (
+        <form onSubmit={handleSubmit}>
             <Box
               display="grid"
               gap="30px"
@@ -271,7 +284,7 @@ const Form = () => {
                 helpertext={touched.state && errors.state}
                 sx={{ gridColumn: "span 1" }}
               />
-              <TextField 
+              <TextField
                 fullWidth
                 variant="filled"
                 type="text"
@@ -284,8 +297,10 @@ const Form = () => {
                 helpertext={touched.postalCode && errors.postalCode}
                 sx={{ gridColumn: "span 1" }}
               />
-              {/* Secondary Addresses */}
-              {values.addresses.map((address, index) => (
+            </Box>
+            {/* Secondary Addresses */}
+            {values.addresses.map((address, index) => ( 
+              address.type === "Secondary" &&
                 <React.Fragment key={index}>
                   {/* Address fields */}
                   <TextField
@@ -348,6 +363,7 @@ const Form = () => {
                   color="info"
                   variant="contained"
                   onClick={() => {
+                    console.log("Adding Secondary Address");
                     setValues(prevValues => ({
                       ...prevValues,
                       addresses: [
@@ -371,14 +387,14 @@ const Form = () => {
                   color="warning"
                   variant="contained"
                   onClick={() => {
-                    // Remove the last secondary address
-                  setValues(prevValues => ({
+                    console.log("Removing Secondary Address");
+                    setValues(prevValues => ({
                     ...prevValues,
                     addresses: prevValues.addresses.slice(0, -1),
                   }));
-                }}
-                sx={{ gridColumn: "span 0.5", marginTop: "16px", marginLeft: "5px" }}
-              >
+                  }}
+                  sx={{ gridColumn: "span 0.5", marginTop: "16px", marginLeft: "5px" }}
+                >
                   Remove Secondary Address
                 </Button>
               </Box>
@@ -419,10 +435,6 @@ const Form = () => {
                 type="button"
                 color="success"
                 variant="contained"
-                gridColumn="span 4"
-                display="flex"
-                justifyContent="end"
-                mt="20px"
                 onClick={() => {
                   setValues(prevValues => ({
                     ...prevValues,
@@ -448,64 +460,132 @@ const Form = () => {
                         fields: prevValues.fields.slice(0, -1),
                       }));
                     }}
-                    sx={{ gridColumn: "span 0.5", marginTop: "16px", marginLeft: "5px"}}>
+                    sx={{ gridColumn: "span 0.5", marginTop: "16px", marginLeft: "5px"}}
+                  >
                     Remove Field
-                  </Button>
+                </Button>
               </Box>
               <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                Create New Patient
+                Update Patient
               </Button>
             </Box>
-            </Box>
           </form>
-        )}
-      </Formik>
-    </Box>
+      )}
+    </Formik>
   );
 };
 
-const checkoutSchema = yup.object().shape({
-  firstname: yup.string().required("First name is required"),
-  middlename: yup.string(), 
-  lastname: yup.string().required("Last name is required"),
-  email: yup.string().email("invalid email").required("Email is required"),
-  year: yup.number().min(1906, 'Year cannot be before 1906').max(new Date().getFullYear(), "Year cannot be in the future").required('Year is required'),
-  month: yup.number().required('Month is required'),
-  day: yup.number().required('Day is required'),
-  dateOfBirth: yup.date().nullable(),
-  street: yup.string().required("Street is required"), 
-  city: yup.string().required("City is required"), 
-  state: yup.string().required('State is required'),
-  postalCode: yup.string().required('Postal Code is required'),
-  status: yup
-    .string()
-    .oneOf(statusEnum, 'Invalid status')
-    .required('Status is required'),
-  fields: yup.array().of(
-    yup.object().shape({
-      label: yup.string().required("Field label is required"),
-      value: yup.string().required("Field value is required"),
-    })
-  )
-});
+const PatientInfo = () => {
+  const { patientId } = useParams();
+  const navigate = useNavigate()
+  const [patientDetails, setPatientDetails] = useState();
 
-const initialValues = {
-  firstname: "",
-  middlename: "", 
-  lastname: "",
-  email: "",
-  year: "",
-  month: "",
-  day: "",
-  status: "", 
-  dateOfBirth: "",
-  street: "", 
-  city: "", 
-  state: "", 
-  postalCode: "", 
-  fields: [],
-  addresses: []
+  useEffect(() => {
+    // Fetch patient details using patientId
+    fetch(`/api/patients/${patientId}`)
+      .then(response => response.json())
+      .then(data => {
+        setPatientDetails(data);
+      })
+      .catch(error => console.error('Error fetching patient details:', error));
+  }, [patientId]);
+
+  const handleDeletePatient = () => {
+    console.log("Deleting Patient Data:", `${patientId}`);
+    // Implement logic to delete patient
+    fetch(`/api/patients/${patientId}`, {
+        method: 'DELETE',
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log('Patient deleted successfully');
+            navigate(`/`);    
+          } else {
+            console.error('Failed to delete patient');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+  const handleUpdatePatient = (updatedPatientData) => {
+    // Implement logic to update patient data
+    console.log("Updated Patient Data:", updatedPatientData);
+
+    const formattedValues = {
+        firstname: updatedPatientData.firstname,
+        middlename: updatedPatientData.middlename,
+        lastname: updatedPatientData.lastname,
+        email: updatedPatientData.email,
+        dateOfBirth: new Date(updatedPatientData.year, updatedPatientData.month - 1, updatedPatientData.day).toISOString().split('T')[0],
+        status: updatedPatientData.status,
+        addresses: [
+          {
+            street: updatedPatientData.street,
+            city: updatedPatientData.city,
+            state: updatedPatientData.state,
+            postalCode: updatedPatientData.postalCode,
+            type: "Primary"
+          },
+          ...updatedPatientData.addresses.map(address => ({
+            street: address.street,
+            city: address.city,
+            state: address.state,
+            postalCode: address.postalCode,
+            type: "Secondary",
+          })),
+        ],
+        fields: updatedPatientData.fields.map(field => ({ label: field.label, value: field.value })),
+      };
+
+
+    console.log("Formatted Patient Data:", formattedValues);
+    fetch(`/api/patients/${patientId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedValues),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+          navigate('/');
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+  };
+
+  return (
+    <div>
+      <h2>Patient Details</h2>
+      <h3> Edit Patient Information here</h3>
+      <Box>
+        <Button
+                type="button"
+                color="error"
+                variant="contained"
+                onClick={() => {
+                    handleDeletePatient()
+                }}
+                sx={{marginTop: "3px", marginBottom: "15px", marginRight: "5px"}}
+                >
+                Delete Patient
+                </Button>
+      </Box>
+      {patientDetails ? (
+        <EditPatientForm
+          initialPatientData={patientDetails}
+          onSubmit={handleUpdatePatient}
+        />
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  );
 };
 
-export default Form;
+export default PatientInfo;
