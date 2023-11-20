@@ -51,8 +51,6 @@ const Dashboard = () => {
     fetchData(); // Call fetchData when the component mounts
   }, []);
 
-  console.log("dashboard 4");
-
   const statusCounts = statusEnum.reduce((counts, status) => {
     counts[status] = userData.filter((user) => user.status === status).length;
     return counts;

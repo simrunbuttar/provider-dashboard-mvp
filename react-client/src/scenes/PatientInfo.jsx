@@ -527,7 +527,6 @@ const PatientInfo = () => {
     }
 
   const handleUpdatePatient = (updatedPatientData) => {
-    // Implement logic to update patient data
     console.log("Updated Patient Data:", updatedPatientData);
 
     const formattedValues = {

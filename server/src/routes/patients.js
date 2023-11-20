@@ -102,6 +102,7 @@ router.put('/:id', async (req, res, next) => {
   }
 });
 
+// If we want to change the schema 
 router.post('/update-patient-fields', async (req, res) => {
   const { customFields, data } = req.body;
 

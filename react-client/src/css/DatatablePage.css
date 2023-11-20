@@ -1,5 +1,3 @@
-/* DatatablePage.css */
-
 .datatable-container {
     margin: 20px;
   }
@@ -34,11 +32,11 @@
   }
   
   .table tbody tr:nth-child(even) {
-    background-color: #ED7630; /* Your even row background color */
+    background-color: #ED7630; 
   }
   
   .table tbody tr:hover {
-    background-color: #dc834f9a; /* Your hover background color */
+    background-color: #dc834f9a;
   }
   
   .button-link {

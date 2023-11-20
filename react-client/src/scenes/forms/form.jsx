@@ -8,7 +8,6 @@ const statusEnum = ['Inquiry', 'Waiting for Patient', 'Action Needed', 'Onboardi
 
 const Form = () => {
 
-
   const handleFormSubmit = (values, {resetForm}) => {
     const formattedValues = {
       firstname: values.firstname,
@@ -36,13 +35,6 @@ const Form = () => {
       fields: values.fields.map(field => ({ label: field.label, value: field.value })),
     };
 
-    console.log("values");
-
-    console.log(values);
-    console.log("formattedValues");
-
-    console.log(formattedValues);
-
     fetch('/api/patients', {
       method: 'POST',
       headers: {
@@ -59,8 +51,6 @@ const Form = () => {
         console.error('Error:', error);
       });
   };
-
-
 
   return (
     <Box m="20px">
@@ -343,14 +333,14 @@ const Form = () => {
                   />
                 </React.Fragment>
               ))}
-              <Box display="flex" justifyContent="end" mt="20px">
+              <Box display="flex" justifycontent="end" mt="20px">
                 <Button
                   type="button"
                   color="info"
                   variant="contained"
                   gridColumn="span 4"
                   display="flex"
-                  justifyContent="end"
+                  justifycontent="end"
                   mt="20px"
                   onClick={() => {
                     setValues(prevValues => ({
@@ -377,7 +367,7 @@ const Form = () => {
                   variant="contained"
                   gridColumn="span 4"
                   display="flex"
-                  justifyContent="end"
+                  justifycontent="end"
                   mt="20px"
                   onClick={() => {
                     // Remove the last secondary address
