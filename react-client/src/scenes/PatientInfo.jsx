@@ -362,6 +362,10 @@ const EditPatientForm = ({ initialPatientData, onSubmit }) => {
                   type="button"
                   color="info"
                   variant="contained"
+                  gridColumn="span 4"
+                  display="flex"
+                  justifyContent="end"
+                  mt="20px"
                   onClick={() => {
                     console.log("Adding Secondary Address");
                     setValues(prevValues => ({
@@ -386,6 +390,10 @@ const EditPatientForm = ({ initialPatientData, onSubmit }) => {
                   type="button"
                   color="warning"
                   variant="contained"
+                  gridColumn="span 4"
+                  display="flex"
+                  justifyContent="end"
+                  mt="20px"
                   onClick={() => {
                     console.log("Removing Secondary Address");
                     setValues(prevValues => ({
@@ -435,6 +443,10 @@ const EditPatientForm = ({ initialPatientData, onSubmit }) => {
                 type="button"
                 color="success"
                 variant="contained"
+                gridColumn="span 4"
+                display="flex"
+                justifyContent="end"
+                mt="20px"
                 onClick={() => {
                   setValues(prevValues => ({
                     ...prevValues,
@@ -454,6 +466,10 @@ const EditPatientForm = ({ initialPatientData, onSubmit }) => {
                     type="button"
                     color="error"
                     variant="contained"
+                    gridColumn="span 4"
+                    display="flex"
+                    justifyContent="end"
+                    mt="20px"
                     onClick={() => {
                       setValues(prevValues => ({
                         ...prevValues,

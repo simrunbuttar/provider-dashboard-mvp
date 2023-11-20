@@ -284,6 +284,7 @@ const Form = () => {
                 helpertext={touched.postalCode && errors.postalCode}
                 sx={{ gridColumn: "span 1" }}
               />
+              </Box>
               {/* Secondary Addresses */}
               {values.addresses.map((address, index) => (
                 <React.Fragment key={index}>
@@ -347,6 +348,10 @@ const Form = () => {
                   type="button"
                   color="info"
                   variant="contained"
+                  gridColumn="span 4"
+                  display="flex"
+                  justifyContent="end"
+                  mt="20px"
                   onClick={() => {
                     setValues(prevValues => ({
                       ...prevValues,
@@ -370,6 +375,10 @@ const Form = () => {
                   type="button"
                   color="warning"
                   variant="contained"
+                  gridColumn="span 4"
+                  display="flex"
+                  justifyContent="end"
+                  mt="20px"
                   onClick={() => {
                     // Remove the last secondary address
                   setValues(prevValues => ({
@@ -442,6 +451,10 @@ const Form = () => {
                     type="button"
                     color="error"
                     variant="contained"
+                    gridColumn="span 4"
+                    display="flex"
+                    justifyContent="end"
+                    mt="20px"
                     onClick={() => {
                       setValues(prevValues => ({
                         ...prevValues,
@@ -456,7 +469,6 @@ const Form = () => {
               <Button type="submit" color="secondary" variant="contained">
                 Create New Patient
               </Button>
-            </Box>
             </Box>
           </form>
         )}
